@@ -11,6 +11,8 @@ import (
 	"logansavage.dev/piconote/internal/piconote"
 )
 
+const Version = "localbuild"
+
 type args struct {
 	command  string
 	noteName string
@@ -34,6 +36,8 @@ func getArgs(argv []string) (args, error) {
 
 func main() {
 	privateMode := flag.Bool("private", false, "read from the private note store")
+	version := flag.Bool("version", false, "show version information for this version of PicoNote then exit successfully")
+
 	flag.Usage = func() {
 		nameRequiredCommands := []string{}
 		for _, command := range piconote.Commands {
@@ -51,6 +55,12 @@ func main() {
 		flag.PrintDefaults()
 	}
 	flag.Parse()
+
+	if *version {
+		fmt.Fprintf(os.Stderr, "PicoNote %s\n", Version)
+		os.Exit(0)
+	}
+
 	arguments, err := getArgs(flag.Args())
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
