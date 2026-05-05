@@ -33,7 +33,7 @@ curl -sSL https://raw.githubusercontent.com/lxsavage/pico-note/refs/heads/main/s
 curl -sSL https://raw.githubusercontent.com/lxsavage/pico-note/refs/heads/main/scripts/uninstall.sh | bash
 ```
 
-### Manual installation
+## Manual installation
 
 In order to build this project, the Golang CLI needs to be installed and on
 path. For more information on how to do this, check the
