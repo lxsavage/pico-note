@@ -11,7 +11,8 @@ import (
 	"logansavage.dev/piconote/internal/piconote"
 )
 
-const Version = "localbuild"
+// Version will be set during a CI build to the version string.
+var Version = "localbuild"
 
 type args struct {
 	command  string
