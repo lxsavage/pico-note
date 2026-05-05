@@ -1,5 +1,7 @@
 # PicoNote
 
+[![build](https://github.com/lxsavage/pico-note/actions/workflows/build.yml/badge.svg)](https://github.com/lxsavage/pico-note/actions/workflows/build.yml)
+
 A tiny markdown notetaking system centered around being as lightweight as
 possible.
 
