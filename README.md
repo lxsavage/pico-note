@@ -9,7 +9,7 @@ possible.
 - Private: a separate set of notes that are hidden from the default view (see
   note below)
 
-> ![IMPORTANT]
+> [!IMPORTANT]
 > For private notes, there is a per-note password enforcement for encrypting
 > them, but it should not be relied on for anything beyond basic protection
 > against utilities like `cat` or `less`; if you need true encryption security,
