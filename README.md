@@ -6,9 +6,14 @@ possible.
 ## Concepts
 
 - Note: a singular note within the program that maps to a file
-- Private: a separate set of notes that are hidden from the default view (these
-  are not encrypted, so don't put confidential info here that shouldn't be seen
-  by another user with access to your home directory)
+- Private: a separate set of notes that are hidden from the default view (see
+  note below)
+
+> ![IMPORTANT]
+> For private notes, there is a per-note password enforcement for encrypting
+> them, but it should not be relied on for anything beyond basic protection
+> against utilities like `cat` or `less`; if you need true encryption security,
+> use a trusted first- or third-party solution (i.e., FileVault or VeraCrypt).
 
 ## Usage
 
