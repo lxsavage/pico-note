@@ -8,7 +8,7 @@ func TestEncryption(t *testing.T) {
 	orig := "test message"
 	key := "abacus"
 
-	encrypted, err := EncryptString(key, orig)
+	encrypted, err := encryptString(key, orig)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -16,7 +16,7 @@ func TestEncryption(t *testing.T) {
 		t.Fatalf("encrypted string is identical to unencrypted")
 	}
 
-	decrypted, err := DecryptCiphertext(key, encrypted)
+	decrypted, err := decryptCiphertext(key, encrypted)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,7 +30,7 @@ func TestEncryptionFailedDecryption(t *testing.T) {
 	key := "abacus"
 	wrongKey := "wrong"
 
-	encrypted, err := EncryptString(key, orig)
+	encrypted, err := encryptString(key, orig)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func TestEncryptionFailedDecryption(t *testing.T) {
 		t.Fatalf("encrypted string is identical to unencrypted")
 	}
 
-	if _, err := DecryptCiphertext(wrongKey, encrypted); err == nil {
+	if _, err := decryptCiphertext(wrongKey, encrypted); err == nil {
 		t.Fatalf("DecryptContents(EncryptContents(\"%s\")) [wrong decrypt key] has no errors; expected error.\n", orig)
 	}
 }

@@ -1,11 +1,3 @@
-//
-// pn
-//
-// Written by Logan Savage. Licensed under the MIT License.
-//
-// The main PicoNote executable.
-//
-
 package main
 
 import (

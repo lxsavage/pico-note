@@ -13,7 +13,7 @@ func DecryptFile(fromPath, toPath, key string) error {
 		return fmt.Errorf("unable to open the from-file: %v", err)
 	}
 
-	decrypted, err := DecryptCiphertext(key, contents)
+	decrypted, err := decryptCiphertext(key, contents)
 	if err != nil {
 		return fmt.Errorf("unable to decrypt the from-file: %v", err)
 	}
@@ -32,7 +32,7 @@ func SyncEncryptedFile(decryptedPath, encryptedPath, key string) error {
 		return err
 	}
 
-	encrypted, err := EncryptString(key, string(plaintext))
+	encrypted, err := encryptString(key, string(plaintext))
 	if err != nil {
 		return err
 	}

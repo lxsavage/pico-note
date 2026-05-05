@@ -12,11 +12,6 @@ import (
 	"golang.org/x/term"
 )
 
-func passHash(password string) ([]byte, error) {
-	res := sha256.Sum256([]byte(password))
-	return res[:], nil
-}
-
 // Using the specified prompt, read a string from the specified input in secure mode and return the result
 func ReadSecureString(f *os.File, prompt string) (string, error) {
 	fmt.Print(prompt)
@@ -30,8 +25,12 @@ func ReadSecureString(f *os.File, prompt string) (string, error) {
 	return string(res), nil
 }
 
-// Encrypts the specified string into a []byte ciphertext using the provided key with AES-256 encryption
-func EncryptString(key, s string) ([]byte, error) {
+func passHash(password string) ([]byte, error) {
+	res := sha256.Sum256([]byte(password))
+	return res[:], nil
+}
+
+func encryptString(key, s string) ([]byte, error) {
 	keyHash, err := passHash(key)
 	if err != nil {
 		return nil, fmt.Errorf("key hashing error: %v", err)
@@ -57,8 +56,7 @@ func EncryptString(key, s string) ([]byte, error) {
 	return resultWithNonce, nil
 }
 
-// Decrypts an AES-256 ciphertext with the provided key and returns the result
-func DecryptCiphertext(key string, ciphertext []byte) (string, error) {
+func decryptCiphertext(key string, ciphertext []byte) (string, error) {
 	keyHash, err := passHash(key)
 	if err != nil {
 		return "", fmt.Errorf("key hashing error: %v", err)
