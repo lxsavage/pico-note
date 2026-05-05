@@ -1,3 +1,11 @@
+//
+// pn
+//
+// Written by Logan Savage. Licensed under the MIT License.
+//
+// The main PicoNote executable.
+//
+
 package main
 
 import (
@@ -67,7 +75,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := piconote.Exec(*privateMode, arguments.command, arguments.noteName); err != nil {
+	if err := piconote.Exec(piconote.ExecParams{
+		Private:  *privateMode,
+		Command:  arguments.command,
+		NoteName: arguments.noteName,
+	}); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 
 		// If the editor exited with a non-zero exit code, pass that up the chain

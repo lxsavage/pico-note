@@ -1,7 +1,6 @@
 package piconote
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -55,19 +54,10 @@ func write(file string) error {
 	} else if editor, ok := os.LookupEnv("EDITOR"); ok {
 		editorPath = editor
 	}
-
 	cmd := exec.Command(editorPath, file)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	return cmd.Run()
-}
-
-func remove(file string) error {
-	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
-		return nil
-	}
-
-	return os.Remove(file)
 }
