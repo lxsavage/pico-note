@@ -2,7 +2,6 @@ package piconote
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path"
 	"strings"
@@ -33,51 +32,26 @@ func Exec(p ExecParams) error {
 	}
 
 	decryptedPath := path.Join(baseDir, noteFile)
-
-	pass := ""
 	encryptedPath := ""
+	key := ""
 	if p.Private && !BypassFileCommands[p.Command] {
-		secured, err := secure.ReadSecureString(os.Stdin, "Password:")
+		var err error
+		key, err = secure.ReadSecureString(os.Stdin, "Password:")
 		if err != nil {
 			return err
 		}
 
-		pass = secured
 		encryptedPath = decryptedPath
-
-		tempFile, err := os.CreateTemp(path.Dir(encryptedPath), ".~*.md")
-		if err != nil {
+		if decryptedPath, err = decryptIntoTempFile(encryptedPath, key); err != nil {
 			return err
-		}
-
-		decryptedPath = tempFile.Name()
-		tempFile.Close()
-
-		if _, err := os.Stat(encryptedPath); err != nil {
-			f, err := os.Create(encryptedPath)
-			if err != nil {
-				return err
-			}
-			f.Close()
-		} else {
-			if err := secure.DecryptFile(encryptedPath, decryptedPath, pass); err != nil {
-				os.Remove(decryptedPath)
-				return err
-			}
 		}
 	}
 
-	// Ensure that the decrypted temp file gets cleaned up regardless of how the command goes
 	defer func() {
 		if !p.Private || BypassFileCommands[p.Command] {
 			return
 		}
-
-		if err := secure.SyncEncryptedFile(decryptedPath, encryptedPath, pass); err != nil {
-			log.Printf("unable to sync encrypted file: %v", err)
-		}
-
-		_ = os.Remove(decryptedPath)
+		_ = syncAndCleanupTempFile(decryptedPath, encryptedPath, key)
 	}()
 
 	var resultErr error
@@ -95,4 +69,35 @@ func Exec(p ExecParams) error {
 	}
 
 	return resultErr
+}
+
+func decryptIntoTempFile(encryptedPath, key string) (string, error) {
+	tempFile, err := os.CreateTemp(path.Dir(encryptedPath), ".~*.md")
+	if err != nil {
+		return "", err
+	}
+
+	decryptedPath := tempFile.Name()
+	tempFile.Close()
+
+	if _, err := os.Stat(encryptedPath); err != nil {
+		f, err := os.Create(encryptedPath)
+		if err != nil {
+			return "", err
+		}
+		f.Close()
+	} else if err := secure.DecryptFile(encryptedPath, decryptedPath, key); err != nil {
+		os.Remove(decryptedPath)
+		return "", err
+	}
+
+	return decryptedPath, nil
+}
+
+func syncAndCleanupTempFile(decryptedPath, encryptedPath, pass string) error {
+	if err := secure.SyncEncryptedFile(decryptedPath, encryptedPath, pass); err != nil {
+		return fmt.Errorf("unable to sync encrypted file: %v", err)
+	}
+
+	return os.Remove(decryptedPath)
 }

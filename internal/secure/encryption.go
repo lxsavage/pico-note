@@ -7,31 +7,15 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
-	"os"
-
-	"golang.org/x/term"
 )
 
-// Using the specified prompt, read a string from the specified input in secure mode and return the result
-func ReadSecureString(f *os.File, prompt string) (string, error) {
-	fmt.Print(prompt)
-
-	res, err := term.ReadPassword(int(f.Fd()))
-	if err != nil {
-		return "", err
-	}
-
-	fmt.Println()
-	return string(res), nil
-}
-
-func passHash(password string) ([]byte, error) {
-	res := sha256.Sum256([]byte(password))
+func hashKey(key string) ([]byte, error) {
+	res := sha256.Sum256([]byte(key))
 	return res[:], nil
 }
 
-func encryptString(key, s string) ([]byte, error) {
-	keyHash, err := passHash(key)
+func encrypt(plaintext []byte, key string) ([]byte, error) {
+	keyHash, err := hashKey(key)
 	if err != nil {
 		return nil, fmt.Errorf("key hashing error: %v", err)
 	}
@@ -51,25 +35,25 @@ func encryptString(key, s string) ([]byte, error) {
 		return nil, fmt.Errorf("GCM nonce creation error: %v", err)
 	}
 
-	encrypted := gcm.Seal(nil, nonce, []byte(s), nil)
+	encrypted := gcm.Seal(nil, nonce, plaintext, nil)
 	resultWithNonce := append(nonce, encrypted...)
 	return resultWithNonce, nil
 }
 
-func decryptCiphertext(key string, ciphertext []byte) (string, error) {
-	keyHash, err := passHash(key)
+func decrypt(ciphertext []byte, key string) ([]byte, error) {
+	keyHash, err := hashKey(key)
 	if err != nil {
-		return "", fmt.Errorf("key hashing error: %v", err)
+		return nil, fmt.Errorf("key hashing error: %v", err)
 	}
 
 	block, err := aes.NewCipher(keyHash)
 	if err != nil {
-		return "", fmt.Errorf("cipher creation error: %v", err)
+		return nil, fmt.Errorf("cipher creation error: %v", err)
 	}
 
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return "", fmt.Errorf("GCM cipher creation error: %v", err)
+		return nil, fmt.Errorf("GCM cipher creation error: %v", err)
 	}
 
 	nonceSize := gcm.NonceSize()
@@ -77,8 +61,8 @@ func decryptCiphertext(key string, ciphertext []byte) (string, error) {
 
 	res, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return string(res), nil
+	return res, nil
 }

@@ -5,40 +5,43 @@ import (
 )
 
 func TestEncryption(t *testing.T) {
-	orig := "test message"
+	orig := []byte("test message")
 	key := "abacus"
 
-	encrypted, err := encryptString(key, orig)
+	encrypted, err := encrypt(orig, key)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if string(encrypted) == orig {
+
+	if string(encrypted) == string(orig) {
 		t.Fatalf("encrypted string is identical to unencrypted")
 	}
 
-	decrypted, err := decryptCiphertext(key, encrypted)
+	decrypted, err := decrypt(encrypted, key)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if decrypted != orig {
+
+	if string(decrypted) != string(orig) {
 		t.Fatalf("DecryptContents(EncryptContents(\"%s\")) = \"%s\"; expected \"%s\"", orig, decrypted, orig)
 	}
 }
 
 func TestEncryptionFailedDecryption(t *testing.T) {
-	orig := "test message"
+	orig := []byte("test message")
 	key := "abacus"
 	wrongKey := "wrong"
 
-	encrypted, err := encryptString(key, orig)
+	encrypted, err := encrypt(orig, key)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if string(encrypted) == orig {
+
+	if string(encrypted) == string(orig) {
 		t.Fatalf("encrypted string is identical to unencrypted")
 	}
 
-	if _, err := decryptCiphertext(wrongKey, encrypted); err == nil {
+	if _, err := decrypt(encrypted, wrongKey); err == nil {
 		t.Fatalf("DecryptContents(EncryptContents(\"%s\")) [wrong decrypt key] has no errors; expected error.\n", orig)
 	}
 }

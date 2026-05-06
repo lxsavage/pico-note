@@ -48,16 +48,16 @@ func list(privateMode bool, dir string) error {
 }
 
 func write(file string) error {
-	editorPath := "/bin/vi"
+	editorPath := "/usr/bin/vi"
 	if visual, ok := os.LookupEnv("VISUAL"); ok {
 		editorPath = visual
 	} else if editor, ok := os.LookupEnv("EDITOR"); ok {
 		editorPath = editor
 	}
+
 	cmd := exec.Command(editorPath, file)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
 	return cmd.Run()
 }
